@@ -26,7 +26,7 @@ jobs:
             echo "===> Checking repo..."
             if [ ! -d ~/ci_cd_session/.git ]; then
               echo "===> Repo not found. Cloning..."
-              git clone https://github.com/RanaZaeem0/ci_cd_session.git ~/ci_cd_session
+              git clone https://github.com/zain-dev25/education_material_Backend.git ~/education_material_Backend
 
               cd ~/ci_cd_session
             else
