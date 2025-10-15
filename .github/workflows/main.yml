@@ -15,3 +15,26 @@ jobs:
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+        
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e
+
+
+            echo "===> Checking repo..."
+            if [ ! -d ~/ci_cd_session/.git ]; then
+              echo "===> Repo not found. Cloning..."
+              git clone https://github.com/RanaZaeem0/ci_cd_session.git ~/ci_cd_session
+
+              cd ~/ci_cd_session
+            else
+              echo "===> Repo exists. Pulling latest..."
+              cd ~/ci_cd_session
+            fi
+            git pull origin main
+            echo "===> Repo is ready."
+            echo "===> Installing dependencies..."
+            npm install
+            npm run dev
