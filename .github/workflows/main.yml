@@ -1,43 +1,17 @@
-name: Deploy Backend on EC2
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: main
 
 jobs:
-  deploy:
-    runs-on: self-hosted
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: |
-            ./package-lock.json
-
-      # ------------------------------
-      # BACKEND SETUP
-      # ------------------------------
-      - name: Install backend dependencies
-        run: npm install
-
-      - name: Create backend .env file
-        working-directory: ./server
-        run: |
-          touch .env
-          echo "${{ secrets.PROD_BACKEND_ENV }}" > .env
-
-      - name: Start backend with PM2
-        working-directory: ./server
-        run: |
-pm2 restart backend ||pm2 start index.js --name backend
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
